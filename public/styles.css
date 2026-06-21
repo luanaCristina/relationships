@@ -1,0 +1,646 @@
+/* ==========================================================================
+   Relationship Timeline - Scrapbook Theme Styles
+   Requirements: 7.4, 9.1, 1.1, 1.2, 1.3, 1.6
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties (Design Tokens)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Colors */
+  --color-background: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #2C2C2C;
+  --color-text-secondary: #555555;
+  --color-timeline-line: #000000;
+  --color-dot: #000000;
+  --color-heart: #E53935;
+  --color-connector: #333333;
+  --color-overlay: rgba(0, 0, 0, 0.75);
+
+  /* OS Frame Colors */
+  --color-os-red: #FF5F56;
+  --color-os-yellow: #FFBD2E;
+  --color-os-green: #27C93F;
+  --color-os-bar: #E0E0E0;
+
+  /* Polaroid */
+  --color-polaroid-bg: #FFFFFF;
+  --color-polaroid-shadow: rgba(0, 0, 0, 0.15);
+
+  /* Fonts - Handwriting/script for titles and captions (Req 9.1) */
+  --font-handwriting: 'Dancing Script', cursive;
+  --font-casual: 'Patrick Hand', cursive;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* Timeline dimensions */
+  --timeline-line-thickness: 3px;
+  --timeline-dot-size: 14px;
+  --timeline-heart-size: 18px;
+  --timeline-connector-width: 2px;
+  --timeline-card-gap: 40px;
+
+  /* Card dimensions */
+  --card-width: 200px;
+  --card-img-height: 180px;
+  --card-border-radius: 4px;
+
+  /* Transitions */
+  --transition-hover: 300ms ease;
+
+  /* Z-indices */
+  --z-timeline-line: 1;
+  --z-timeline-dot: 2;
+  --z-timeline-heart: 2;
+  --z-timeline-connector: 1;
+  --z-card: 3;
+  --z-modal: 1000;
+}
+
+/* --------------------------------------------------------------------------
+   Base Styles & Reset (Req 7.4 - Background, Req 1.6 - Responsive 320-1920px)
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* --------------------------------------------------------------------------
+   Typography (Req 9.1 - Handwriting/script fonts)
+   -------------------------------------------------------------------------- */
+.font-handwriting {
+  font-family: var(--font-handwriting);
+}
+
+.font-casual {
+  font-family: var(--font-casual);
+}
+
+/* --------------------------------------------------------------------------
+   Header (Req 7.1 - 7.5)
+   -------------------------------------------------------------------------- */
+#site-header {
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg) var(--spacing-md);
+  text-align: center;
+}
+
+#site-header h1 {
+  font-family: var(--font-handwriting);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.header-subtitle {
+  font-family: var(--font-casual);
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+  font-style: italic;
+}
+
+.header-hearts {
+  font-size: clamp(16px, 3vw, 22px);
+  color: var(--color-heart);
+  margin-top: var(--spacing-sm);
+  letter-spacing: 6px;
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   Timeline Container (Req 1.1 - 1.6, Req 9.3)
+   -------------------------------------------------------------------------- */
+#timeline-container {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  -webkit-overflow-scrolling: touch;
+}
+
+.timeline-scroll {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: max-content;
+  padding: 200px var(--spacing-2xl) 200px;
+}
+
+/* --------------------------------------------------------------------------
+   Timeline Line (Req 1.1 - Horizontal black line 2-4px, centered vertically)
+   -------------------------------------------------------------------------- */
+.timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: var(--timeline-line-thickness);
+  background-color: var(--color-timeline-line);
+  transform: translateY(-50%);
+  z-index: var(--z-timeline-line);
+}
+
+/* --------------------------------------------------------------------------
+   Timeline Dots (Req 1.2 - Circular dots 10-16px diameter)
+   -------------------------------------------------------------------------- */
+.timeline-dot {
+  position: absolute;
+  width: var(--timeline-dot-size);
+  height: var(--timeline-dot-size);
+  background-color: var(--color-dot);
+  border-radius: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-timeline-dot);
+}
+
+/* --------------------------------------------------------------------------
+   Decorative Hearts (Req 1.3 - Red hearts, min 1 per 2 cards)
+   -------------------------------------------------------------------------- */
+.timeline-heart {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-timeline-heart);
+  font-size: var(--timeline-heart-size);
+  color: var(--color-heart);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.timeline-heart::before {
+  content: '❤';
+}
+
+/* --------------------------------------------------------------------------
+   Vertical Connectors (between cards and dots)
+   -------------------------------------------------------------------------- */
+.timeline-connector {
+  position: absolute;
+  width: var(--timeline-connector-width);
+  background-color: var(--color-connector);
+  z-index: var(--z-timeline-connector);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Card positioned above the line */
+.timeline-item.above .timeline-connector {
+  bottom: 0;
+  top: auto;
+  height: 40px;
+}
+
+/* Card positioned below the line */
+.timeline-item.below .timeline-connector {
+  top: 0;
+  bottom: auto;
+  height: 40px;
+}
+
+/* --------------------------------------------------------------------------
+   Timeline Items (Card wrapper with positioning)
+   -------------------------------------------------------------------------- */
+.timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--card-width);
+  margin: 0 var(--timeline-card-gap);
+  z-index: var(--z-card);
+}
+
+.timeline-item.above {
+  align-self: flex-start;
+  margin-bottom: auto;
+  transform: translateY(-50%);
+}
+
+.timeline-item.below {
+  align-self: flex-end;
+  margin-top: auto;
+  transform: translateY(50%);
+}
+
+/* --------------------------------------------------------------------------
+   Cards Base Styles
+   -------------------------------------------------------------------------- */
+.card {
+  width: var(--card-width);
+  background-color: var(--color-surface);
+  border-radius: var(--card-border-radius);
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--transition-hover), box-shadow var(--transition-hover);
+}
+
+.card:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 4px 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Card image area */
+.card-image {
+  width: 100%;
+  height: var(--card-img-height);
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Card caption/name */
+.card-name {
+  font-family: var(--font-handwriting);
+  font-size: 1rem;
+  text-align: center;
+  padding: var(--spacing-sm) var(--spacing-xs);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Moldura OS (Req 3.3 - Title bar with 3 colored circles 8-14px)
+   -------------------------------------------------------------------------- */
+.frame-os .os-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: var(--color-os-bar);
+  border-bottom: 1px solid #ccc;
+}
+
+.frame-os .os-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.frame-os .os-btn--red {
+  background-color: var(--color-os-red);
+}
+
+.frame-os .os-btn--yellow {
+  background-color: var(--color-os-yellow);
+}
+
+.frame-os .os-btn--green {
+  background-color: var(--color-os-green);
+}
+
+/* --------------------------------------------------------------------------
+   Moldura Polaroid (Req 3.4 - Rotation -5 to +5, white bottom border ≥30px)
+   -------------------------------------------------------------------------- */
+.frame-polaroid {
+  padding: var(--spacing-sm) var(--spacing-sm) 0;
+  background-color: var(--color-polaroid-bg);
+  box-shadow: 2px 3px 12px var(--color-polaroid-shadow);
+}
+
+.frame-polaroid .card-name {
+  min-height: 36px;
+  padding: var(--spacing-sm) var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   Card Fallback (Req 4.1 - 4.4)
+   -------------------------------------------------------------------------- */
+.card-fallback {
+  width: var(--card-width);
+  height: calc(var(--card-img-height) + 50px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+  border-radius: var(--card-border-radius);
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.12);
+  padding: var(--spacing-md);
+  text-align: center;
+  cursor: default;
+  transition: transform var(--transition-hover), box-shadow var(--transition-hover);
+}
+
+.card-fallback .fallback-name {
+  font-family: var(--font-handwriting);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-fallback:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 4px 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.card-fallback .fallback-visual {
+  font-size: 2rem;
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Modal / Lightbox (Req 5.4, 5.5)
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.modal-content img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: var(--card-border-radius);
+}
+
+.modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  font-size: 2rem;
+  color: #FFFFFF;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.modal-close:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+.modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.modal-nav:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.modal-nav--prev {
+  left: -60px;
+}
+
+.modal-nav--next {
+  right: -60px;
+}
+
+.modal-indicator {
+  text-align: center;
+  color: #FFFFFF;
+  font-family: var(--font-casual);
+  font-size: 1rem;
+  margin-top: var(--spacing-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Seção Final (Req 8.1 - 8.4)
+   -------------------------------------------------------------------------- */
+#final-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  min-height: 150px;
+}
+
+.final-text {
+  font-family: var(--font-handwriting);
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.share-button {
+  font-family: var(--font-casual);
+  font-size: 1.1rem;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-heart);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease;
+  box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+}
+
+.share-button:hover {
+  background-color: #C62828;
+  transform: scale(1.05);
+}
+
+.share-feedback {
+  font-family: var(--font-casual);
+  font-size: 0.9rem;
+  color: var(--color-os-green);
+  margin-top: var(--spacing-sm);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.share-feedback.visible {
+  opacity: 1;
+}
+
+.final-hearts {
+  font-size: 1.4rem;
+  color: var(--color-heart);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adjustments (Req 1.6 - 320px to 1920px)
+   -------------------------------------------------------------------------- */
+
+/* Small mobile (320px - 480px) */
+@media (max-width: 480px) {
+  :root {
+    --card-width: 160px;
+    --card-img-height: 140px;
+    --timeline-card-gap: 24px;
+    --spacing-3xl: 40px;
+  }
+
+  .timeline-scroll {
+    padding: 160px var(--spacing-lg) 160px;
+  }
+
+  .modal-nav--prev {
+    left: -48px;
+  }
+
+  .modal-nav--next {
+    right: -48px;
+  }
+}
+
+/* Tablet (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    --card-width: 180px;
+    --card-img-height: 160px;
+    --timeline-card-gap: 32px;
+  }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+  :root {
+    --card-width: 220px;
+    --card-img-height: 200px;
+    --timeline-card-gap: 48px;
+  }
+}
+
+/* Large desktop (1200px+) */
+@media (min-width: 1200px) {
+  :root {
+    --card-width: 240px;
+    --card-img-height: 220px;
+    --timeline-card-gap: 56px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Focus Styles (Keyboard Accessibility)
+   -------------------------------------------------------------------------- */
+.card:focus-visible,
+.card-fallback:focus-visible,
+.share-button:focus-visible,
+.modal-nav:focus-visible,
+.modal-close:focus-visible {
+  outline: 3px solid var(--color-heart);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Utility - Smooth scrollbar styling (Webkit)
+   -------------------------------------------------------------------------- */
+#timeline-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+#timeline-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#timeline-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+#timeline-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
