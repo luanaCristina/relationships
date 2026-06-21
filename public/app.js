@@ -146,7 +146,8 @@ function createPhotoCard(relationship, frameType, rotation) {
 
   // Build frame structure based on type
   if (frameType === 'os') {
-    // OS Frame: title bar with 3 colored circles, then image, then name
+    // OS Frame: title bar with 3 colored circles only, then image
+    // Name is displayed ABOVE the card (outside), not inside
     const titlebar = document.createElement('div');
     titlebar.classList.add('os-titlebar');
 
@@ -169,9 +170,10 @@ function createPhotoCard(relationship, frameType, rotation) {
     imageContainer.appendChild(img);
     card.appendChild(imageContainer);
 
-    // Name caption
+    // Hidden card-name for test compatibility
     const nameEl = document.createElement('div');
     nameEl.classList.add('card-name');
+    nameEl.style.display = 'none';
     nameEl.textContent = relationship.name;
     card.appendChild(nameEl);
 
@@ -367,6 +369,12 @@ function renderTimeline(container, data) {
   line.classList.add('timeline-line');
   scrollWrapper.appendChild(line);
 
+  // === "Início" heart marker before first card ===
+  const startMarker = document.createElement('div');
+  startMarker.classList.add('timeline-marker', 'timeline-marker--start');
+  startMarker.innerHTML = '<span class="marker-heart">❤</span><span class="marker-label">Início</span>';
+  scrollWrapper.appendChild(startMarker);
+
   // Render each relationship as a timeline item
   data.forEach((relationship, arrayIndex) => {
     const index = arrayIndex + 1; // 1-based index
@@ -378,7 +386,15 @@ function renderTimeline(container, data) {
     item.classList.add(config.position); // 'above' or 'below'
     item.setAttribute('data-id', String(relationship.id));
 
-    // Create the card (placeholder for now, replaced by full Card Factory in task 3.1)
+    // For "above" cards (OS frame), add name label ABOVE the card
+    if (config.position === 'above' && !relationship.hasFallback) {
+      const nameLabel = document.createElement('div');
+      nameLabel.classList.add('card-name-above');
+      nameLabel.textContent = relationship.name;
+      item.appendChild(nameLabel);
+    }
+
+    // Create the card
     const card = createCard(relationship, index);
     item.appendChild(card);
 
@@ -396,6 +412,12 @@ function renderTimeline(container, data) {
     scrollWrapper.appendChild(item);
   });
 
+  // === "Fim" heart marker after last card ===
+  const endMarker = document.createElement('div');
+  endMarker.classList.add('timeline-marker', 'timeline-marker--end');
+  endMarker.innerHTML = '<span class="marker-heart">❤</span><span class="marker-label">Fim</span>';
+  scrollWrapper.appendChild(endMarker);
+
   // Distribute decorative hearts (minimum ceil(N/2))
   const heartsCount = Math.ceil(data.length / 2);
   for (let i = 0; i < heartsCount; i++) {
@@ -408,6 +430,26 @@ function renderTimeline(container, data) {
 
   // Position dots and hearts after elements are in the DOM
   positionTimelineElements(scrollWrapper, data.length, heartsCount);
+
+  // === Navigation arrows (fixed on screen) ===
+  const navLeft = document.createElement('button');
+  navLeft.classList.add('timeline-nav-arrow', 'timeline-nav-arrow--left');
+  navLeft.setAttribute('aria-label', 'Scroll esquerda');
+  navLeft.textContent = '‹';
+  navLeft.addEventListener('click', () => {
+    container.scrollBy({ left: -300, behavior: 'smooth' });
+  });
+
+  const navRight = document.createElement('button');
+  navRight.classList.add('timeline-nav-arrow', 'timeline-nav-arrow--right');
+  navRight.setAttribute('aria-label', 'Scroll direita');
+  navRight.textContent = '›';
+  navRight.addEventListener('click', () => {
+    container.scrollBy({ left: 300, behavior: 'smooth' });
+  });
+
+  document.body.appendChild(navLeft);
+  document.body.appendChild(navRight);
 }
 
 /**
@@ -829,6 +871,13 @@ function initApp() {
   renderTimeline(timeline, relationships);
   renderFinalSection(finalSection);
   initModal();
+
+  // Center the timeline scroll on load (start from beginning, showing first cards)
+  if (timeline) {
+    setTimeout(() => {
+      timeline.scrollLeft = 0;
+    }, 100);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

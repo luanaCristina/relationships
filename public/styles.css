@@ -89,6 +89,9 @@ body {
   min-height: 100vh;
   line-height: 1.5;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 img {
@@ -161,7 +164,7 @@ button {
   overflow-x: auto;
   overflow-y: visible;
   scroll-behavior: smooth;
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  padding: var(--spacing-3xl) 50px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -326,6 +329,17 @@ button {
   padding: 6px 10px;
   background-color: var(--color-os-bar);
   border-bottom: 1px solid #ccc;
+}
+
+.frame-os .os-titlebar-name {
+  font-family: var(--font-casual);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
 }
 
 .frame-os .os-btn {
@@ -626,21 +640,135 @@ button {
 }
 
 /* --------------------------------------------------------------------------
-   Utility - Smooth scrollbar styling (Webkit)
+   Utility - Scrollbar vermelha, compacta, posicionada abaixo do header hearts
    -------------------------------------------------------------------------- */
 #timeline-container::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
 
 #timeline-container::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(229, 57, 53, 0.1);
+  border-radius: 3px;
+  margin: 0 50px;
 }
 
 #timeline-container::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  background-color: var(--color-heart);
+  border-radius: 3px;
 }
 
 #timeline-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: #C62828;
 }
+
+/* Firefox scrollbar */
+#timeline-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-heart) rgba(229, 57, 53, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Timeline Navigation Arrows - Fixed/sticky on screen edges
+   -------------------------------------------------------------------------- */
+.timeline-nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(229, 57, 53, 0.12);
+  border: 1.5px solid var(--color-heart);
+  color: var(--color-heart);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: background 200ms ease, transform 200ms ease;
+  box-shadow: 0 2px 6px rgba(229, 57, 53, 0.2);
+}
+
+.timeline-nav-arrow:hover {
+  background: rgba(229, 57, 53, 0.25);
+  transform: translateY(-50%) scale(1.15);
+}
+
+.timeline-nav-arrow--left {
+  left: 10px;
+}
+
+.timeline-nav-arrow--right {
+  right: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Timeline Start/End Markers (Heart with label)
+   -------------------------------------------------------------------------- */
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: 0 var(--spacing-md);
+  z-index: var(--z-card);
+  align-self: center;
+}
+
+.timeline-marker .marker-heart {
+  font-size: 2.5rem;
+  color: var(--color-heart);
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(229, 57, 53, 0.3));
+}
+
+.timeline-marker .marker-label {
+  font-family: var(--font-handwriting);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Card Name Above (for OS frames positioned above the timeline)
+   -------------------------------------------------------------------------- */
+.card-name-above {
+  font-family: var(--font-handwriting);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: var(--card-width);
+}
+
+@media (max-width: 480px) {
+  .timeline-nav-arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+  
+  .timeline-nav-arrow--left {
+    left: 4px;
+  }
+  
+  .timeline-nav-arrow--right {
+    right: 4px;
+  }
+  
+  .timeline-marker .marker-heart {
+    font-size: 2rem;
+  }
+  
+  .card-name-above {
+    font-size: 0.85rem;
+  }
+}
+
