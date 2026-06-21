@@ -386,8 +386,8 @@ function renderTimeline(container, data) {
     item.classList.add(config.position); // 'above' or 'below'
     item.setAttribute('data-id', String(relationship.id));
 
-    // For "above" cards (OS frame), add name label ABOVE the card
-    if (config.position === 'above' && !relationship.hasFallback) {
+    // For "above" cards, add name label ABOVE the card
+    if (config.position === 'above') {
       const nameLabel = document.createElement('div');
       nameLabel.classList.add('card-name-above');
       nameLabel.textContent = relationship.name;
